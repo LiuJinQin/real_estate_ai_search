@@ -19,8 +19,8 @@ queries = [query.strip() for query in queries if query.strip() and "#" not in qu
 def text_to_sql(user_input, chat_history):
 
     # 打印输入
-    print(f"用户输入：{user_input}")  # 是否有100万到200万之间的房源推荐？
-    print(f"初始聊天记录：{chat_history}")  # []
+    # print(f"用户输入：{user_input}")  # 是否有100万到200万之间的房源推荐？
+    # print(f"初始聊天记录：{chat_history}")  # []
 
     # 获取 AI 回复
     ai_reply = handle_query(user_input)
@@ -31,6 +31,25 @@ def text_to_sql(user_input, chat_history):
 
     return "", chat_history
 
+def text_to_sql_good_display_sql_code(user_input, chat_history):
+
+    # 打印输入
+    # print(f"用户输入：{user_input}")  # 是否有100万到200万之间的房源推荐？
+    # print(f"初始聊天记录：{chat_history}")  # []
+
+    # 获取 AI 回复
+    ai_reply = handle_query(user_input)
+    ai_reply = f"""生成的SQL：
+```sql{ai_reply}
+```
+"""
+
+    # 处理返回
+    chat_history.append({"role": "user", "content": user_input})
+    chat_history.append({"role": "assistant", "content": ai_reply})
+
+    return "", chat_history
+    
 
 with gr.Blocks() as demo:
     gr.Markdown("### 后花园 AI Search")
@@ -46,13 +65,13 @@ with gr.Blocks() as demo:
                 value=queries[0]
             )
             user_input.submit(
-                fn=text_to_sql,
+                fn=text_to_sql_good_display_sql_code,
                 inputs=[user_input, chatbot],
                 outputs=[user_input, chatbot]
             )
             submit_btn = gr.Button("Search")
             submit_btn.click(
-                fn=text_to_sql,
+                fn=text_to_sql_good_display_sql_code,
                 inputs=[user_input, chatbot],
                 outputs=[user_input, chatbot]
             )

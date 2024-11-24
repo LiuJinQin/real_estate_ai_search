@@ -8,7 +8,7 @@ from handlers.query_handler import handle_query
 # file_name = "test/questions_3类_预处理.txt"
 # file_name = "test/第4类问题_questions_中文.txt"
 file_name_by_sam = "test/questions_for_webui_2类+3类+4类_by_sam.txt"
-file_name_by_llm = "test/questions_for_webui_2类_by_llm.txt"
+file_name_by_llm = "test/questions_for_webui_2类+3类_by_llm.txt"
 
 # 打开文件并逐行读取
 with open(file_name_by_sam, "r", encoding="utf-8") as file:

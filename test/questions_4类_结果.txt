@@ -1,0 +1,215 @@
+*********************************
+问题序号：116
+用户问题：最近在 Epsom, Auckland 售出的房产有哪些
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT p.property_id, p.suburb_name, p.district_name, p.region_name, pt.transaction_price, pt.transaction_date
+FROM property p
+JOIN property_transaction pt ON p.property_id = pt.property_id
+WHERE p.suburb_name = 'Epsom'
+  AND p.district_name = 'Auckland'
+  AND p.is_sold = 1
+ORDER BY pt.transaction_date DESC;
+*********************************
+问题序号：117
+用户问题：最近降价销售的房产有哪些？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT p.property_id, p.suburb_name, p.district_name, p.region_name,
+       p.price AS listing_price, pt.transaction_price, pt.transaction_date
+FROM property p
+JOIN property_transaction pt ON p.property_id = pt.property_id
+WHERE pt.transaction_price < p.price
+ORDER BY pt.transaction_date DESC;
+*********************************
+问题序号：118
+用户问题：Epsom, Auckland 出售的房产有哪些
+问题相关的表：['property']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, price, bedrooms, bathrooms, building_area
+FROM property
+WHERE suburb_name = 'Epsom'
+  AND district_name = 'Auckland'
+  AND is_sold = 0
+  AND is_listed = 1;
+*********************************
+问题序号：119
+用户问题：Epsom, Auckland 的房产销售中位价格是多少
+问题相关的表：['suburb_property_statistics']
+生成的SQL：
+SELECT avm_median
+FROM suburb_property_statistics
+WHERE suburb_name = 'Epsom'
+  AND district_name = 'Auckland'
+ORDER BY year DESC, season DESC
+LIMIT 1;
+*********************************
+问题序号：120
+用户问题：Epsom 四居室房产的价格范围是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT MIN(price) AS min_price, MAX(price) AS max_price
+FROM property
+WHERE suburb_name = 'Epsom'
+  AND bedrooms = 4;
+*********************************
+问题序号：121
+用户问题：Epsom, Auckland 三居室房产的平均价格是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT AVG(price) AS average_price
+FROM property
+WHERE suburb_name = 'Epsom'
+  AND district_name = 'Auckland'
+  AND bedrooms = 3;
+*********************************
+问题序号：122
+用户问题：Epsom, Auckland 四居室房产的平均价格是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT AVG(price) AS average_price
+FROM property
+WHERE suburb_name = 'Epsom'
+  AND district_name = 'Auckland'
+  AND bedrooms = 4;
+*********************************
+问题序号：123
+用户问题：过去 3 天内挂牌的房产有哪些
+问题相关的表：['property']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, price, bedrooms, bathrooms, listing_date
+FROM property
+WHERE listing_date >= CURDATE() - INTERVAL 3 DAY
+  AND is_listed = 1;
+*********************************
+问题序号：124
+用户问题：Epsom 的全新待售房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, price, bedrooms, bathrooms, listing_date
+FROM property
+WHERE suburb_name = 'Epsom'
+  AND purpose_type = '买房-全新房'
+  AND is_sold = 0
+  AND is_listed = 1;
+*********************************
+问题序号：125
+用户问题：有哪些房产拥有大面积土地？
+问题相关的表：['property']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, land_area
+FROM property
+WHERE land_area > 1000;
+*********************************
+问题序号：126
+用户问题：本周有哪些房产有开放参观？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.property_id, p.suburb_name, p.district_name, p.region_name
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE YEARWEEK(pod.time_start, 1) = YEARWEEK(CURDATE(), 1);
+*********************************
+问题序号：127
+用户问题：Epsom, Auckland 的房产租赁中位价格是多少
+问题相关的表：['suburb_rental_statistics']
+生成的SQL：
+SELECT median_rent
+FROM suburb_rental_statistics
+WHERE suburb_name = 'Epsom'
+ORDER BY year DESC, quarter DESC
+LIMIT 1;
+*********************************
+问题序号：128
+用户问题：Epsom 最好的小学有哪些
+问题相关的表：['school']
+生成的SQL：
+SELECT name, decile, eqin
+FROM school
+WHERE suburb_name = 'Epsom'
+ORDER BY decile DESC, eqin ASC
+LIMIT 5;
+*********************************
+问题序号：129
+用户问题：Epsom 最好的中学有哪些
+问题相关的表：['school']
+生成的SQL：
+SELECT name, decile, eqin
+FROM school
+WHERE suburb_name = 'Epsom'
+ORDER BY decile DESC, eqin ASC
+LIMIT 5;
+*********************************
+问题序号：130
+用户问题：Epsom 学区内的待售房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, price, bedrooms, bathrooms, listing_date
+FROM property
+WHERE suburb_name = 'Epsom'
+  AND is_sold = 0
+  AND is_listed = 1;
+*********************************
+问题序号：131
+用户问题：Epsom 的私立学校有哪些？
+问题相关的表：['school']
+生成的SQL：
+SELECT name
+FROM school
+WHERE suburb_name = 'Epsom';
+*********************************
+问题序号：132
+用户问题：靠近 Epsom 的周边郊区有哪些？
+问题相关的表：['suburb_neighbors']
+生成的SQL：
+SELECT neighbor_suburb_name
+FROM suburb_neighbors
+WHERE suburb_name = 'Epsom';
+*********************************
+问题序号：133
+用户问题：Epsom 最贵的 10 条街道有哪些
+问题相关的表：['无']
+生成的SQL：
+SELECT street_name, AVG(price) AS average_price
+FROM property
+WHERE suburb_name = 'Epsom'
+GROUP BY street_name
+ORDER BY average_price DESC
+LIMIT 10;
+*********************************
+问题序号：134
+用户问题：Epsom 最受欢迎和关注的房产有哪些？
+问题相关的表：['无']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, price
+FROM property
+WHERE suburb_name = 'Epsom'
+ORDER BY popularity_metric DESC
+LIMIT 10;
+*********************************
+问题序号：135
+用户问题：Epsom, Auckland 的主要人口统计数据是什么？
+问题相关的表：['suburb_population_statistics']
+生成的SQL：
+SELECT suburb_name, year, population_total, population_growth_rate, male_population, female_population, median_age, age_distribution, median_income, income_distribution, education_level_distribution, ethnicity_distribution, residence_duration_distribution
+FROM suburb_population_statistics
+WHERE suburb_name = 'Epsom'
+ORDER BY year DESC
+LIMIT 1;
+*********************************
+问题序号：136
+用户问题：哪些房产位于联排别墅和公寓区的分区中？
+问题相关的表：['property']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, price, bedrooms, bathrooms
+FROM property
+WHERE unitary_plan_zone = 'Residential - Terrace Housing and Apartment Building Zone';
+*********************************
+问题序号：137
+用户问题：哪些房产具有细分潜力？
+问题相关的表：['property']
+生成的SQL：
+SELECT property_id, suburb_name, district_name, region_name, land_area, unitary_plan_zone
+FROM property
+WHERE unitary_plan_zone IN ('Residential - Large Lot Zone', 'Residential - Mixed Housing Urban Zone')
+  AND land_area > 1000;  -- 假设大于1000平方米的土地具有细分潜力

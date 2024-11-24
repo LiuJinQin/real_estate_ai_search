@@ -1,0 +1,159 @@
+# 数据库 Schema
+
+## 表：property
+- 描述：存储每套房产的基础信息，包括房产位置、面积、价格和基本属性。
+- 字段：
+  - property_id (INT)：房产ID，每个房产唯一标识。
+  - purpose_type (ENUM('买房', '买房-全新房', '买房-房产开发', '租房', '查看-最近成交'))：房产用途类型，用于表示房产的市场定位或用户的目标需求。
+  - suburb_id (INT)：所属的suburbID。
+  - suburb_name (VARCHAR)：所属的suburb名称。
+  - district_id (INT)：所属的districtID。
+  - district_name (VARCHAR)：所属的district名称。
+  - region_id (INT)：所属的regionID。
+  - region_name (VARCHAR)：所属的region名称。
+  - country_id (TINYINT)：所属的国家ID。1代表新西兰，2代表澳大利亚。
+  - country_name (ENUM('新西兰', '澳大利亚'))：所属的国家名称。
+  - price (INT)：房产的挂牌价格（标价），用于显示在用户界面中（美元）。
+  - price_listing_type (ENUM('要价', '价格可议', '拍卖', '投标', 'POA', '出价', '限期出售', '其他'))：房产价格的显示方式或交易类型，用于描述房产在市场中的定价策略或出售方式。
+  - price_by_government_valuation (INT)：房产的政府估价（美元）。
+  - price_by_avm (INT)：房产的模型估价。由本房产网站自研的自动估值模型（AVM）计算得出（美元）。
+  - building_area (FLOAT)：建筑面积（平方米）。
+  - land_area (FLOAT)：土地面积（平方米）。
+  - bedrooms (TINYINT)：卧室数量，注意：当提到房产的“房间数量”时，默认指的是房产的“卧室数量”。
+  - bathrooms (TINYINT)：浴室数量。
+  - parking_spaces (TINYINT)：车位数量。
+  - building_year (YEAR)：建造年份。
+  - building_style (ENUM('当代风格', '豪华现代风', '传统风格', '乡村风', '海滩热带风', '维多利亚地中海'))：房屋的建筑风格。
+  - property_type (ENUM('独立屋', '公寓', '单元房', '城市屋', '排房', '自住投资', '乡村别墅', '乡村住宅建地', '建地'))：房产类型。
+  - ownership_type (ENUM('全幅地永久产权', '半幅地永久产权', '租赁产权', '公寓/单元房', '分时度假物业', 'Supplementary record sheet', 'Records embodied in the register', 'Gazette notice', 'Life estate'))：产权类型。
+  - listing_date (DATE)：上市日期。
+  - unitary_plan_zone (ENUM('Residential - Single House Zone', 'Residential - Mixed Housing Suburban Zone', 'Residential - Mixed Housing Urban Zone', 'Residential - Terrace Housing and Apartment Building Zone', 'Residential - Rural and Coastal Settlement Zone', 'Residential - Large Lot Zone', 'Business', 'Coastal', 'General', 'New growth', 'Public Open Space', 'Rural', 'Special purpose zone'))：房产对应的城市规划分区类型。
+  - has_open_days (TINYINT)：是否有开放日。1代表有，0代表无。
+  - is_sold (TINYINT)：是否已售出。1表示已售出，0表示未售出。
+  - is_listed (TINYINT)：是否已发布。1表示已发布，0表示未发布。
+
+## 表：property_open_days
+- 描述：房产开放日信息表。记录房产的开放日开始和结束时间，包括时区信息，用于查询特定日期和时间段内的房产开放情况。
+- 字段：
+  - property_id (INT)：关联的房产ID，外键，引用 Property 表的 property_id。
+  - time_start (DATETIME)：开放日的开始时间。
+  - time_end (DATETIME)：开放日的结束时间。
+  - timezone (VARCHAR)：时区偏移量。格式为“±HH”。例：值为“+12:00”时，表示该开放日时间相对于UTC时区的偏移量为+12小时。此字段用于支持跨时区的开放日查询。
+
+## 表：school
+- 描述：记录学校的基本信息和评分数据，用于房产与学校的关联查询和筛选。
+- 字段：
+  - school_id (INT)：学校ID，主键。
+  - name (VARCHAR)：学校名称。
+  - decile (TINYINT)：学校的Decile评分，用于衡量学校的教育质量，范围通常为 1-10，分数越高表示学校越好。
+  - eqin (TINYINT)：学校的EQIN评分，表示学校的综合教育质量指标，分数越低表示学校质量越高。
+  - suburb_name (VARCHAR)：学校所在的suburb名称。
+
+## 表：suburb_property_statistics
+- 描述：记录每个suburb的房产统计数据，包括房产中位价、均价、房产数量及变化率。数据支持按季度统计，并默认每季度更新一次。当用户未指定时间范围时，使用最新的统计数据。地理层级关系：suburb → district → region。
+- 字段：
+  - suburb_id (INT)：suburb ID。
+  - suburb_name (VARCHAR)：suburb名称。
+  - district_id (INT)：district ID。
+  - district_name (VARCHAR)：district名称。
+  - region_id (INT)：region ID。
+  - region_name (VARCHAR)：region名称。
+  - year (YEAR)：数据记录年份，用于标识数据所属年份。
+  - season (TINYINT)：数据记录季度 (1=Q1, 2=Q2, 3=Q3, 4=Q4)。
+  - avm_median (FLOAT)：suburb房产中位价（美元）。
+  - avm_mean (FLOAT)：suburb房产均价（美元）。
+  - property_count (INT)：suburb房产数量。
+  - median_price_change_rate (FLOAT)：房产中位价变化率，按百分比表示。变化率基于当前季度中位价与上一季度中位价的变化。
+  - mean_price_change_rate (FLOAT)：房产均价变化率，按百分比表示。变化率基于当前季度均价与上一季度均价的变化。
+  - update_frequency (VARCHAR)：数据更新时间粒度，固定值 'Quarterly'，表示每3个月更新一次。
+
+## 表：district_property_statistics
+- 描述：记录每个district的房产统计数据，包括房产中位价、均价、房产数量及变化率。数据支持按季度统计，并默认每季度更新一次。当用户未指定时间范围时，使用最新的统计数据。地理层级关系：district → region。
+- 字段：
+  - district_id (INT)：district ID。
+  - district_name (VARCHAR)：district名称。
+  - region_id (INT)：region ID。
+  - region_name (VARCHAR)：region名称。
+  - year (YEAR)：数据记录年份，用于标识数据所属年份。
+  - season (TINYINT)：数据记录季度 (1=Q1, 2=Q2, 3=Q3, 4=Q4)。
+  - avm_median (FLOAT)：district房产中位价（美元）。
+  - avm_mean (FLOAT)：district房产均价（美元）。
+  - property_count (INT)：district房产数量。
+  - median_price_change_rate (FLOAT)：房产中位价变化率，按百分比表示。变化率基于当前季度中位价与上一季度中位价的变化。
+  - mean_price_change_rate (FLOAT)：房产均价变化率，按百分比表示。变化率基于当前季度均价与上一季度均价的变化。
+  - update_frequency (VARCHAR)：数据更新时间粒度，固定值 'Quarterly'，表示每3个月更新一次。
+
+## 表：region_property_statistics
+- 描述：记录每个region的房产统计数据，包括房产中位价、均价、房产数量及变化率。数据支持按季度统计，并默认每季度更新一次。当用户未指定时间范围时，使用最新的统计数据。
+- 字段：
+  - region_id (INT)：region ID。
+  - region_name (VARCHAR)：region名称。
+  - year (YEAR)：数据记录年份，用于标识数据所属年份。
+  - season (TINYINT)：数据记录季度 (1=Q1, 2=Q2, 3=Q3, 4=Q4)。
+  - avm_median (FLOAT)：region房产中位价（美元）。
+  - avm_mean (FLOAT)：region房产均价（美元）。
+  - property_count (INT)：region房产数量。
+  - median_price_change_rate (FLOAT)：房产中位价变化率，按百分比表示。变化率基于当前季度中位价与上一季度中位价的变化。
+  - mean_price_change_rate (FLOAT)：房产均价变化率，按百分比表示。变化率基于当前季度均价与上一季度均价的变化。
+  - update_frequency (VARCHAR)：数据更新时间粒度，固定值 'Quarterly'，表示每3个月更新一次。
+
+## 表：property_transaction
+- 描述：房产交易表。记录每套房的成交信息，包括成交价格、成交日期和交易形式等。
+- 字段：
+  - transaction_id (INT)：成交记录唯一标识。
+  - property_id (INT)：房产ID，外键，引用 Property 表的 property_id。
+  - transaction_price (INT)：成交价格（美元）。
+  - transaction_date (DATE)：成交日期。
+  - days_on_market (INT)：房产从上市到售出的天数。
+  - price_listing_type (ENUM('要价', '价格可议', '拍卖', '投标', 'POA', '出价', '限期出售', '其他'))：房产价格的显示方式或交易类型，用于描述房产在市场中的定价策略或出售方式。
+  - suburb_name (VARCHAR)：房产所在的suburb名称。
+  - district_name (VARCHAR)：房产所在的district名称。
+  - region_name (VARCHAR)：房产所在的region名称。
+
+## 表：suburb_neighbors
+- 描述：记录每个suburb的周边suburb信息，用于查询某个suburb的邻近区域。
+- 字段设计：
+  - suburb_id (INT): 当前suburb ID，外键，引用property表的suburb_id。
+  - suburb_name (VARCHAR): 当前suburb名称。
+  - neighbor_suburb_id (INT): 周边suburb ID，外键，引用property表的suburb_id。
+  - neighbor_suburb_name (VARCHAR): 周边suburb名称。
+
+## 表：suburb_rental_statistics
+- 描述：记录每个suburb的租赁统计信息，包括租金中位价、租金回报率及数据更新时间粒度。
+- 字段设计：
+  - suburb_id (INT): suburbID，外键，引用 property 表的 suburb_id。
+  - suburb_name (VARCHAR): suburb名称，外键，引用 property 表的 suburb_name。
+  - year (YEAR): 数据记录年份，用于标识数据所属年份。
+  - quarter (TINYINT): 数据记录季度 (1=Q1, 2=Q2, 3=Q3, 4=Q4)。
+  - median_rent (FLOAT): suburb的租金中位价（美元）。
+  - rental_yield_percent (FLOAT): 租金收益率（百分比），表示房产投资的租金回报率。
+  - update_frequency (VARCHAR): 数据更新时间粒度，固定值为'Quarterly'，表示每3个月更新一次。
+
+## 表：suburb_population_statistics
+- 描述：suburb级别的人口统计表。存储以suburb为单位的人口统计信息，包括suburb的人口总数、性别分布及其他人口特征，用于分析社区人口结构和市场需求。
+- 字段：
+  - suburb_id (INT)：suburbID。
+  - suburb_name (VARCHAR)：suburb名称。
+  - year (INT)：数据记录年份。
+  - population_total (INT): suburb的总人口数。
+  - population_growth_rate (FLOAT): 人口增长率，按上一年的增长率百分比表示。
+  - male_population (INT): 男性人口数量。
+  - female_population (INT): 女性人口数量。
+  - median_age (FLOAT): 人口的中位年龄。
+  - age_distribution (JSON): 不同年龄段的人口比例（例如，`{"0-14":30%, "15-64":60%, "65+":10%}`）。
+  - median_income (FLOAT): 个人收入中位数。
+  - income_distribution (JSON): 不同收入范围内的人口比例（例如，{"0-5000":5%, "5001-20000":20%, "20001-50000":40%, "50001+":35%}）。
+  - education_level_distribution (JSON): 不同教育水平的比例（例如，{"no_qualification":10%, "bachelor_degree":30%, "master_or_higher":15%}）。
+  - ethnicity_distribution (JSON): 按种族分组的人口比例（例如，{"European":50%, "Māori":20%, "Asian":25%, "Pacific_Peoples":5%}）。
+  - residence_duration_distribution (JSON): 按居住年限分组的比例（例如，{"0-5_years":25%, "6-10_years":35%, "11+_years":40%}）。
+
+## 表：suburb_crime_statistics
+- 描述：记录每个suburb的犯罪统计信息，包括按犯罪类型分组的犯罪记录、受害人数及时间跨度。同时包含最新的犯罪率数据和数据更新时间粒度。
+- 字段：
+  - suburb_id (INT)：suburbID。
+  - suburb_name (VARCHAR)：suburb名称。
+  - year (INT)：数据记录年份。
+  - month (TINYINT)：数据记录月份。
+  - total_crime_record_count (INT)：某时间段内（按 suburb 和时间）所有犯罪记录的总数。
+  - latest_crime_rate (FLOAT)：最新犯罪率（按最新一个月的犯罪记录与该社区人口计算）。
+  - update_frequency (VARCHAR)：数据更新时间粒度（例如`'Monthly'`，表示每月更新一次）。

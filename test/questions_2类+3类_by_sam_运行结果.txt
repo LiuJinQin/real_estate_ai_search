@@ -1,0 +1,1306 @@
+*********************************
+问题序号：1
+用户问题：在Remuera，价格在100万至200万之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price BETWEEN 1000000 AND 2000000
+  AND property_type = '独立屋';
+*********************************
+问题序号：2
+用户问题：Remuera的公寓中，有哪些是3房、2个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND bedrooms = 3
+  AND bathrooms = 2;
+*********************************
+问题序号：3
+用户问题：有没有在Remuera本周六开放的4房独立别墅？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.bedrooms = 4
+  AND p.property_type = '独立屋'
+  AND DATE(pod.time_start) = CURDATE() + INTERVAL (6 - WEEKDAY(CURDATE())) DAY;
+*********************************
+问题序号：4
+用户问题：Remuera最近7天上市的拍卖房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_listing_type = '拍卖'
+  AND listing_date >= CURDATE() - INTERVAL 7 DAY;
+*********************************
+问题序号：5
+用户问题：在Remuera，建筑面积大于200平方米的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND building_area > 200
+  AND property_type = '排房';
+*********************************
+问题序号：6
+用户问题：Remuera土地面积大于500平方米的房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND land_area > 500;
+*********************************
+问题序号：7
+用户问题：Remuera60年代末建造的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND building_year BETWEEN 1965 AND 1969;
+*********************************
+问题序号：8
+用户问题：Remuera有哪些全幅地永久产权的独立别墅？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND ownership_type = '全幅地永久产权';
+*********************************
+问题序号：9
+用户问题：在Remuera，政府估价在50万到100万之间的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND price_by_government_valuation BETWEEN 500000 AND 1000000;
+*********************************
+问题序号：10
+用户问题：Remuera中，位于mixed housing zone的房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND unitary_plan_zone IN ('Residential - Mixed Housing Suburban Zone', 'Residential - Mixed Housing Urban Zone');
+*********************************
+问题序号：11
+用户问题：Remuera Deciles评分为10分的学校附近有哪些房产？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 10;
+*********************************
+问题序号：12
+用户问题：在Remuera，价格在100万至200万之间的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price BETWEEN 1000000 AND 2000000
+  AND property_type = '排房';
+*********************************
+问题序号：13
+用户问题：Remuera的独立别墅中，有哪些是4房、2个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND bedrooms = 4
+  AND bathrooms = 2;
+*********************************
+问题序号：14
+用户问题：有没有在Remuera本周六开放的3房公寓？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.bedrooms = 3
+  AND p.property_type = '公寓'
+  AND DATE(pod.time_start) = CURDATE() + INTERVAL (6 - WEEKDAY(CURDATE())) DAY;
+*********************************
+问题序号：15
+用户问题：Remuera昨天上市的拍卖房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_listing_type = '拍卖'
+  AND listing_date = CURDATE() - INTERVAL 1 DAY;
+*********************************
+问题序号：16
+用户问题：在Remuera，建筑面积大于300平方米的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND building_area > 300
+  AND property_type = '独立屋';
+*********************************
+问题序号：17
+用户问题：Remuera土地面积在200到500平方米之间的房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND land_area BETWEEN 200 AND 500;
+*********************************
+问题序号：18
+用户问题：Remuera90年代末建造的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND building_year BETWEEN 1995 AND 1999;
+*********************************
+问题序号：19
+用户问题：Remuera有哪些cross lease产权的排房？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND ownership_type = '半幅地永久产权';
+*********************************
+问题序号：20
+用户问题：在Remuera，政府估价在100万到200万之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_by_government_valuation BETWEEN 1000000 AND 2000000
+  AND property_type = '独立屋';
+*********************************
+问题序号：21
+用户问题：Remuera中，位于terrace and apartment zone的房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND unitary_plan_zone = 'Residential - Terrace Housing and Apartment Building Zone';
+*********************************
+问题序号：22
+用户问题：Remuera Deciles评分为9分的学校附近有哪些房产？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 9;
+*********************************
+问题序号：23
+用户问题：在Remuera，价格在100万至200万之间的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND price BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：24
+用户问题：Remuera的排房中，有哪些是3房、1个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND bedrooms = 3
+  AND bathrooms = 1;
+*********************************
+问题序号：25
+用户问题：有没有在Remuera本周六开放的土地？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.property_type = '建地'
+  AND DAYOFWEEK(pod.time_start) = 7
+  AND pod.time_start BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY);
+*********************************
+问题序号：26
+用户问题：Remuera最近7天上市的tender房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_listing_type = '投标'
+  AND listing_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE();
+*********************************
+问题序号：27
+用户问题：在Remuera，建筑面积大于200平方米的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND building_area > 200;
+*********************************
+问题序号：28
+用户问题：Remuera土地面积大于200平方米的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND land_area > 200;
+*********************************
+问题序号：29
+用户问题：Remuera60年代末建造的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND building_year BETWEEN 1965 AND 1969;
+*********************************
+问题序号：30
+用户问题：Remuera有哪些fee simple产权的公寓？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND ownership_type = '全幅地永久产权';
+*********************************
+问题序号：31
+用户问题：在Remuera，政府估价在50万到100万之间的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND price_by_government_valuation BETWEEN 500000 AND 1000000;
+*********************************
+问题序号：32
+用户问题：Remuera中，位于mixed housing zone的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND unitary_plan_zone IN ('Residential - Mixed Housing Suburban Zone', 'Residential - Mixed Housing Urban Zone');
+*********************************
+问题序号：33
+用户问题：Remuera Deciles评分为8分的学校附近有哪些房产？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 8;
+*********************************
+问题序号：34
+用户问题：在Remuera，价格在100万至200万之间的建地有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '建地'
+  AND price BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：35
+用户问题：Remuera的独立别墅中，有哪些是4房、1个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND bedrooms = 4
+  AND bathrooms = 1;
+*********************************
+问题序号：36
+用户问题：有没有在Remuera本周六开放的4房排房？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.property_type = '排房'
+  AND p.bedrooms = 4
+  AND DAYOFWEEK(pod.time_start) = 7
+  AND pod.time_start BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY);
+*********************************
+问题序号：37
+用户问题：Remuera昨天上市的投标房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_listing_type = '投标'
+  AND listing_date = CURDATE() - INTERVAL 1 DAY;
+*********************************
+问题序号：38
+用户问题：在Remuera，建筑面积大于300平方米的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND building_area > 300;
+*********************************
+问题序号：39
+用户问题：Remuera土地面积在200到500平方米之间的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND land_area BETWEEN 200 AND 500;
+*********************************
+问题序号：40
+用户问题：Remuera90年代末建造的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND building_year BETWEEN 1995 AND 1999;
+*********************************
+问题序号：41
+用户问题：Remuera有哪些cross lease产权的独立别墅？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND ownership_type = '半幅地永久产权';
+*********************************
+问题序号：42
+用户问题：在Remuera，政府估价在100万到200万之间的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND price_by_government_valuation BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：43
+用户问题：Remuera中，位于terrace and apartment zone的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND unitary_plan_zone = 'Residential - Terrace Housing and Apartment Building Zone';
+*********************************
+问题序号：44
+用户问题：Remuera Deciles评分为10分的学校附近有哪些排房？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 10
+  AND p.property_type = '排房';
+*********************************
+问题序号：45
+用户问题：在Remuera，价格在100万至200万之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND price BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：46
+用户问题：Remuera的公寓中，有哪些是3房、1个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND bedrooms = 3
+  AND bathrooms = 1;
+*********************************
+问题序号：47
+用户问题：有没有在Remuera本周六开放的2房独立别墅？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.property_type = '独立屋'
+  AND p.bedrooms = 2
+  AND DAYOFWEEK(pod.time_start) = 7
+  AND pod.time_start BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY);
+*********************************
+问题序号：48
+用户问题：Remuera最近7天上市的拍卖房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_listing_type = '拍卖'
+  AND listing_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND CURDATE();
+*********************************
+问题序号：49
+用户问题：在Remuera，建筑面积大于200平方米的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND building_area > 200
+  AND property_type = '独立屋';
+*********************************
+问题序号：50
+用户问题：Remuera土地面积大于500平方米的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND land_area > 500
+  AND property_type = '排房';
+*********************************
+问题序号：51
+用户问题：Remuera60年代末建造的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND building_year BETWEEN 1965 AND 1969;
+*********************************
+问题序号：52
+用户问题：Remuera有哪些全幅地永久产权的公寓？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND ownership_type = '全幅地永久产权';
+*********************************
+问题序号：53
+用户问题：在Remuera，政府估价在50万到100万之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND price_by_government_valuation BETWEEN 500000 AND 1000000;
+*********************************
+问题序号：54
+用户问题：Remuera中，位于mixed housing zone的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND unitary_plan_zone IN ('Residential - Mixed Housing Suburban Zone', 'Residential - Mixed Housing Urban Zone');
+*********************************
+问题序号：55
+用户问题：Remuera Deciles评分为9分的学校附近有哪些独立别墅？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 9
+  AND p.property_type = '独立屋';
+*********************************
+问题序号：56
+用户问题：在Remuera，价格在100万至200万之间的土地有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '建地'
+  AND price BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：57
+用户问题：Remuera的排房中，有哪些是4房、2个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND bedrooms = 4
+  AND bathrooms = 2;
+*********************************
+问题序号：58
+用户问题：有没有在Remuera本周六开放的3房排房？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.property_type = '排房'
+  AND p.bedrooms = 3
+  AND DAYOFWEEK(pod.time_start) = 7
+  AND DATE(pod.time_start) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY);
+*********************************
+问题序号：59
+用户问题：Remuera昨天上市的拍卖房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_listing_type = '拍卖'
+  AND listing_date = CURDATE() - INTERVAL 1 DAY;
+*********************************
+问题序号：60
+用户问题：在Remuera，建筑面积大于300平方米的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND building_area > 300;
+*********************************
+问题序号：61
+用户问题：Remuera土地面积在200到500平方米之间的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND land_area BETWEEN 200 AND 500;
+*********************************
+问题序号：62
+用户问题：Remuera90年代末建造的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND building_year BETWEEN 1995 AND 1999;
+*********************************
+问题序号：63
+用户问题：Remuera有哪些cross lease产权的公寓？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND ownership_type = '租赁产权';
+*********************************
+问题序号：64
+用户问题：在Remuera，政府估价在100万到200万之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND price_by_government_valuation BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：65
+用户问题：Remuera中，位于terrace and apartment zone的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND unitary_plan_zone = 'Residential - Terrace Housing and Apartment Building Zone';
+*********************************
+问题序号：66
+用户问题：Remuera Deciles评分为8分的学校附近有哪些公寓？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 8
+  AND p.property_type = '公寓';
+*********************************
+问题序号：67
+用户问题：在Remuera，价格在100万至200万之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND price BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：68
+用户问题：Remuera的公寓中，有哪些是4房、2个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND bedrooms = 4
+  AND bathrooms = 2;
+*********************************
+问题序号：69
+用户问题：有没有在Remuera本周六开放的2房公寓？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.property_type = '公寓'
+  AND p.bedrooms = 2
+  AND DAYOFWEEK(pod.time_start) = 7
+  AND pod.time_start BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY);
+*********************************
+问题序号：70
+用户问题：Remuera最近7天上市的投标房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_listing_type = '投标'
+  AND listing_date BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE();
+*********************************
+问题序号：71
+用户问题：在Remuera，建筑面积大于200平方米的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND building_area > 200;
+*********************************
+问题序号：72
+用户问题：Remuera土地面积大于200平方米的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND land_area > 200;
+*********************************
+问题序号：73
+用户问题：Remuera60年代末建造的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND building_year BETWEEN 1965 AND 1969;
+*********************************
+问题序号：74
+用户问题：Remuera有哪些fee simple产权的独立别墅？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND ownership_type = '全幅地永久产权';
+*********************************
+问题序号：75
+用户问题：在Remuera，政府估价在50万到100万之间的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND price_by_government_valuation BETWEEN 500000 AND 1000000;
+*********************************
+问题序号：76
+用户问题：Remuera中，位于mixed housing zone的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '独立屋'
+  AND unitary_plan_zone IN ('Residential - Mixed Housing Suburban Zone', 'Residential - Mixed Housing Urban Zone');
+*********************************
+问题序号：77
+用户问题：Remuera Deciles评分为10分的学校附近有哪些独立别墅？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 10
+  AND p.property_type = '独立屋';
+*********************************
+问题序号：78
+用户问题：在Remuera，价格在100万至200万之间的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND price BETWEEN 1000000 AND 2000000;
+*********************************
+问题序号：79
+用户问题：Remuera的排房中，有哪些是3房、2个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '排房'
+  AND bedrooms = 3
+  AND bathrooms = 2;
+*********************************
+问题序号：80
+用户问题：有没有在Remuera本周六开放的1房独立别墅？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.bedrooms = 1
+  AND p.property_type = '独立屋'
+  AND DAYOFWEEK(pod.time_start) = 7
+  AND pod.time_start >= CURDATE()
+  AND pod.time_start < CURDATE() + INTERVAL (7 - DAYOFWEEK(CURDATE())) DAY;
+*********************************
+问题序号：81
+用户问题：Remuera最近7天上市的拍卖房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND listing_date >= CURDATE() - INTERVAL 7 DAY
+  AND price_listing_type = '拍卖';
+*********************************
+问题序号：82
+用户问题：在Remuera，建筑面积大于300平方米的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND building_area > 300
+  AND property_type = '独立屋';
+*********************************
+问题序号：83
+用户问题：Remuera土地面积在200到500平方米之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND land_area BETWEEN 200 AND 500
+  AND property_type = '独立屋';
+*********************************
+问题序号：84
+用户问题：Remuera90年代末建造的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND building_year BETWEEN 1995 AND 1999;
+*********************************
+问题序号：85
+用户问题：Remuera有哪些cross lease产权的独立别墅？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND ownership_type = '半幅地永久产权'
+  AND property_type = '独立屋';
+*********************************
+问题序号：86
+用户问题：在Remuera，政府估价在100万到200万之间的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_by_government_valuation BETWEEN 1000000 AND 2000000
+  AND property_type = '公寓';
+*********************************
+问题序号：87
+用户问题：Remuera中，位于terrace and apartment zone的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND unitary_plan_zone = 'Residential - Terrace Housing and Apartment Building Zone'
+  AND property_type = '独立屋';
+*********************************
+问题序号：88
+用户问题：Remuera Deciles评分为9分的学校附近有哪些排房？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 9
+  AND p.property_type = '排房';
+*********************************
+问题序号：89
+用户问题：在Remuera，价格在100万至200万之间的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price BETWEEN 1000000 AND 2000000
+  AND property_type = '独立屋';
+*********************************
+问题序号：90
+用户问题：Remuera的公寓中，有哪些是3房、1个浴室的？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND property_type = '公寓'
+  AND bedrooms = 3
+  AND bathrooms = 1;
+*********************************
+问题序号：91
+用户问题：有没有在Remuera本周六开放的4房公寓？
+问题相关的表：['property', 'property_open_days']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN property_open_days pod ON p.property_id = pod.property_id
+WHERE p.suburb_name = 'Remuera'
+  AND p.bedrooms = 4
+  AND p.property_type = '公寓'
+  AND DAYOFWEEK(pod.time_start) = 7
+  AND pod.time_start BETWEEN CURDATE() AND CURDATE() + INTERVAL (6 - WEEKDAY(CURDATE())) DAY;
+*********************************
+问题序号：92
+用户问题：Remuera昨天上市的拍卖房产有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND listing_date = CURDATE() - INTERVAL 1 DAY
+  AND price_listing_type = '拍卖';
+*********************************
+问题序号：93
+用户问题：在Remuera，建筑面积大于200平方米的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND building_area > 200
+  AND property_type = '公寓';
+*********************************
+问题序号：94
+用户问题：Remuera土地面积大于500平方米的独立别墅有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND land_area > 500
+  AND property_type = '独立屋';
+*********************************
+问题序号：95
+用户问题：Remuera60年代末建造的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND building_year BETWEEN 1965 AND 1969
+  AND property_type = '排房';
+*********************************
+问题序号：96
+用户问题：Remuera有哪些全幅地永久产权的独立别墅？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND ownership_type = '全幅地永久产权'
+  AND property_type = '独立屋';
+*********************************
+问题序号：97
+用户问题：在Remuera，政府估价在50万到100万之间的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price_by_government_valuation BETWEEN 500000 AND 1000000
+  AND property_type = '排房';
+*********************************
+问题序号：98
+用户问题：Remuera中，位于mixed housing zone的公寓有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND unitary_plan_zone IN ('Residential - Mixed Housing Suburban Zone', 'Residential - Mixed Housing Urban Zone')
+  AND property_type = '公寓';
+*********************************
+问题序号：99
+用户问题：Remuera Deciles评分为8分的学校附近有哪些独立别墅？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT p.*
+FROM property p
+JOIN school s ON p.suburb_name = s.suburb_name
+WHERE s.suburb_name = 'Remuera'
+  AND s.decile = 8
+  AND p.property_type = '独立屋';
+*********************************
+问题序号：100
+用户问题：在Remuera，价格在100万至200万之间的排房有哪些？
+问题相关的表：['property']
+生成的SQL：
+SELECT *
+FROM property
+WHERE suburb_name = 'Remuera'
+  AND price BETWEEN 1000000 AND 2000000
+  AND property_type = '排房';
+*********************************
+问题序号：101
+用户问题：(suburb_name=Remuera)这个地区最近半年的房产中位价是多少？
+问题相关的表：['suburb_property_statistics']
+生成的SQL：
+SELECT avm_median
+FROM suburb_property_statistics
+WHERE suburb_name = 'Remuera'
+ORDER BY year DESC, season DESC
+LIMIT 2;
+*********************************
+问题序号：102
+用户问题：(suburb_name=Remuera)过去一年来，这个社区的房价涨幅或跌幅是多少？
+问题相关的表：['suburb_property_statistics']
+生成的SQL：
+SELECT
+    year,
+    season,
+    median_price_change_rate,
+    mean_price_change_rate
+FROM
+    suburb_property_statistics
+WHERE
+    suburb_name = 'Remuera'
+    AND (year = YEAR(CURDATE()) OR year = YEAR(CURDATE()) - 1)
+ORDER BY
+    year DESC,
+    season DESC;
+*********************************
+问题序号：103
+用户问题：(suburb_name=Remuera)这个区域的平均房价是多少，与全市平均水平相比如何？
+问题相关的表：['suburb_property_statistics', 'district_property_statistics', 'region_property_statistics']
+生成的SQL：
+SELECT
+    s.suburb_name,
+    s.avm_mean AS suburb_average_price,
+    d.avm_mean AS district_average_price,
+    r.avm_mean AS region_average_price
+FROM
+    suburb_property_statistics s
+JOIN
+    district_property_statistics d ON s.district_id = d.district_id AND s.year = d.year AND s.season = d.season
+JOIN
+    region_property_statistics r ON s.region_id = r.region_id AND s.year = r.year AND s.season = r.season
+WHERE
+    s.suburb_name = 'Remuera'
+ORDER BY
+    s.year DESC,
+    s.season DESC
+LIMIT 1;
+*********************************
+问题序号：104
+用户问题：(suburb_name=Remuera)在附近的区域中，这个地区的房价排名第几？
+问题相关的表：['suburb_property_statistics', 'suburb_neighbors']
+生成的SQL：
+SELECT
+    s1.suburb_name,
+    s1.avm_median,
+    COUNT(*) AS rank
+FROM
+    suburb_property_statistics s1
+JOIN
+    suburb_neighbors sn ON s1.suburb_id = sn.neighbor_suburb_id
+JOIN
+    suburb_property_statistics s2 ON sn.neighbor_suburb_id = s2.suburb_id
+WHERE
+    sn.suburb_name = 'Remuera' AND s1.year = YEAR(CURDATE()) AND s1.season = QUARTER(CURDATE())
+GROUP BY
+    s1.suburb_name, s1.avm_median
+ORDER BY
+    s1.avm_median DESC;
+*********************************
+问题序号：105
+用户问题：(suburb_name=Remuera)这个地区的房产每平方米价格是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    property_id,
+    price / building_area AS price_per_square_meter
+FROM
+    property
+WHERE
+    suburb_name = 'Remuera'
+    AND building_area > 0
+    AND is_listed = 1;
+*********************************
+问题序号：106
+用户问题：(suburb_name=Remuera)在过去的六个月里，这个区域共成交了多少套房产？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    COUNT(*) AS total_transactions
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Remuera'
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
+*********************************
+问题序号：107
+用户问题：(suburb_name=Remuera)这里的房产通常在市场上停留多久才能售出？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    AVG(days_on_market) AS average_days_on_market
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Remuera';
+*********************************
+问题序号：108
+用户问题：(suburb_name=Remuera)该地区最高和最低的房产成交价分别是多少？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    MAX(transaction_price) AS highest_transaction_price,
+    MIN(transaction_price) AS lowest_transaction_price
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Remuera';
+*********************************
+问题序号：109
+用户问题：(suburb_name=Remuera)这个社区的租金回报率是多少？
+问题相关的表：['suburb_rental_statistics']
+生成的SQL：
+SELECT
+    rental_yield_percent
+FROM
+    suburb_rental_statistics
+WHERE
+    suburb_name = 'Remuera'
+ORDER BY
+    year DESC,
+    quarter DESC
+LIMIT 1;
+*********************************
+问题序号：110
+用户问题：(suburb_name=Remuera)附近有哪些高评分的学校，这对房价有何影响？
+问题相关的表：['school', 'suburb_property_statistics']
+生成的SQL：
+SELECT
+    s.name AS school_name,
+    s.decile AS school_decile,
+    s.eqin AS school_eqin,
+    sp.avm_median AS property_median_price,
+    sp.avm_mean AS property_average_price
+FROM
+    school s
+JOIN
+    suburb_property_statistics sp ON s.suburb_name = sp.suburb_name
+WHERE
+    s.suburb_name = 'Remuera'
+    AND s.decile >= 8 -- Assuming high rating means decile score of 8 or above
+ORDER BY
+    s.decile DESC, s.eqin ASC;
+*********************************
+问题序号：111
+用户问题：(suburb_name=Remuera)未来是否有新的开发项目可能影响该地区的房价？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    property_id,
+    purpose_type,
+    suburb_name,
+    listing_date
+FROM
+    property
+WHERE
+    suburb_name = 'Remuera'
+    AND purpose_type = '买房-房产开发'
+    AND listing_date > CURDATE()
+    AND is_listed = 1;
+*********************************
+问题序号：112
+用户问题：(suburb_name=Remuera)这个区域的人口增长率和人口结构是怎样的？
+问题相关的表：['suburb_population_statistics']
+生成的SQL：
+SELECT
+    population_growth_rate,
+    population_total,
+    male_population,
+    female_population,
+    age_distribution,
+    ethnicity_distribution,
+    education_level_distribution,
+    residence_duration_distribution
+FROM
+    suburb_population_statistics
+WHERE
+    suburb_name = 'Remuera'
+ORDER BY
+    year DESC
+LIMIT 1;
+*********************************
+问题序号：113
+用户问题：(suburb_name=Remuera)与其他地区相比，这里的房产增值潜力如何？
+问题相关的表：['suburb_property_statistics', 'district_property_statistics', 'region_property_statistics']
+生成的SQL：
+SELECT
+    s.suburb_name,
+    s.median_price_change_rate AS suburb_median_price_change_rate,
+    d.district_name,
+    d.median_price_change_rate AS district_median_price_change_rate,
+    r.region_name,
+    r.median_price_change_rate AS region_median_price_change_rate
+FROM
+    suburb_property_statistics s
+JOIN
+    district_property_statistics d ON s.district_id = d.district_id AND s.year = d.year AND s.season = d.season
+JOIN
+    region_property_statistics r ON s.region_id = r.region_id AND s.year = r.year AND s.season = r.season
+WHERE
+    s.suburb_name = 'Remuera'
+ORDER BY
+    s.year DESC,
+    s.season DESC
+LIMIT 1;
+*********************************
+问题序号：114
+用户问题：(suburb_name=Remuera)这个社区的犯罪率是多少，这会对房价产生什么影响？
+问题相关的表：['suburb_crime_statistics', 'suburb_property_statistics']
+生成的SQL：
+SELECT
+    sc.latest_crime_rate,
+    sp.avm_median AS property_median_price,
+    sp.avm_mean AS property_average_price,
+    sp.median_price_change_rate,
+    sp.mean_price_change_rate
+FROM
+    suburb_crime_statistics sc
+JOIN
+    suburb_property_statistics sp ON sc.suburb_id = sp.suburb_id
+WHERE
+    sc.suburb_name = 'Remuera'
+    AND sp.suburb_name = 'Remuera'
+ORDER BY
+    sc.year DESC,
+    sc.month DESC,
+    sp.year DESC,
+    sp.season DESC
+LIMIT 1;
+*********************************
+问题序号：115
+用户问题：(suburb_name=Remuera)在我的预算范围内，还有哪些区域值得考虑，它们的房价和增值前景如何？
+问题相关的表：['property', 'suburb_property_statistics', 'district_property_statistics', 'region_property_statistics']
+生成的SQL：
+SELECT
+    p.suburb_name,
+    p.district_name,
+    p.region_name,
+    p.price,
+    s.avm_median AS suburb_median_price,
+    s.mean_price_change_rate AS suburb_price_change_rate,
+    d.avm_median AS district_median_price,
+    d.mean_price_change_rate AS district_price_change_rate,
+    r.avm_median AS region_median_price,
+    r.mean_price_change_rate AS region_price_change_rate
+FROM
+    property p
+JOIN
+    suburb_property_statistics s ON p.suburb_id = s.suburb_id
+JOIN
+    district_property_statistics d ON p.district_id = d.district_id
+JOIN
+    region_property_statistics r ON p.region_id = r.region_id
+WHERE
+    p.price BETWEEN 500000 AND 750000
+    AND p.is_listed = 1
+ORDER BY
+    p.price ASC;

@@ -1,0 +1,35 @@
+# 单表-不含日期
+## 单表-不含日期-最简单的查询
+在Remuera，价格在100万至200万之间的独立别墅有哪些？
+Remuera的公寓中，有哪些是3房、2个浴室的？
+
+## 单表-不含日期-一些值需要归纳到特定的枚举值
+Remuera中，位于mixed housing zone的房产有哪些？
+Remuera有哪些cross lease产权的排房？
+Remuera中，位于terrace and apartment zone的房产有哪些？
+Remuera有哪些fee simple产权的公寓？
+Remuera中，位于mixed housing zone的独立别墅有哪些？
+
+## 单表-不含日期-自动识别年代末为最后5年，例“60年代末”是指“building_year BETWEEN 1965 AND 1969;”
+Remuera60年代末建造的独立别墅有哪些？
+Remuera90年代末建造的公寓有哪些？
+Remuera60年代末建造的排房有哪些？
+Remuera90年代末建造的独立别墅有哪些？
+
+# 单表-含日期
+Remuera最近7天上市的拍卖房产有哪些？
+Remuera昨天上市的拍卖房产有哪些？
+Remuera最近7天上市的tender房产有哪些？
+Remuera昨天上市的投标房产有哪些？
+
+# 2表-不含日期
+Remuera Deciles评分为10分的学校附近有哪些房产？
+Remuera Deciles评分为9分的学校附近有哪些房产？
+# Remuera Deciles评分为8分的学校附近有哪些房产？
+
+# 2表-含日期
+有没有在Remuera本周六开放的4房独立别墅？
+有没有在Remuera本周六开放的3房公寓？
+有没有在Remuera本周六开放的土地？
+有没有在Remuera本周六开放的4房排房？
+

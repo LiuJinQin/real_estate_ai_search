@@ -384,3 +384,1281 @@ FROM
     property
 WHERE
     suburb_name = 'Ponsonby';
+*********************************
+问题序号：30
+用户问题：(suburb_name=New Lynn)在房价涨幅排名中，这个社区在全市属于什么位置？
+问题相关的表：['suburb_property_statistics', 'district_property_statistics', 'region_property_statistics']
+生成的SQL：
+SELECT
+    s.suburb_name,
+    s.median_price_change_rate,
+    (SELECT COUNT(*) + 1
+     FROM suburb_property_statistics AS s2
+     WHERE s2.year = s.year
+       AND s2.season = s.season
+       AND s2.median_price_change_rate > s.median_price_change_rate) AS rank_in_city
+FROM
+    suburb_property_statistics AS s
+WHERE
+    s.suburb_name = 'New Lynn'
+ORDER BY
+    s.year DESC, s.season DESC
+LIMIT 1;
+*********************************
+问题序号：31
+用户问题：(suburb_name=Massey)最近一年中，该地区成交量最低的月份是哪一个？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    MONTH(transaction_date) AS month,
+    COUNT(transaction_id) AS transaction_count
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Massey'
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY
+    MONTH(transaction_date)
+ORDER BY
+    transaction_count ASC
+LIMIT 1;
+*********************************
+问题序号：32
+用户问题：(suburb_name=Saint Heliers)这里的房产类型中，土地面积大于1000平方米的占比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN land_area > 1000 THEN 1 END) / COUNT(*)) * 100 AS percentage_large_land_area
+FROM
+    property
+WHERE
+    suburb_name = 'Saint Heliers';
+*********************************
+问题序号：33
+用户问题：(suburb_name=Herne Bay)房价在300万以上的房产占总挂牌房产的比例是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN price > 3000000 THEN 1 END) / COUNT(*)) * 100 AS percentage_above_3_million
+FROM
+    property
+WHERE
+    suburb_name = 'Herne Bay'
+    AND is_listed = 1;
+*********************************
+问题序号：34
+用户问题：(suburb_name=Papatoetoe)过去三个月中，每月新增挂牌房产数量的变化趋势如何？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    MONTH(listing_date) AS month,
+    COUNT(property_id) AS new_listings
+FROM
+    property
+WHERE
+    suburb_name = 'Papatoetoe'
+    AND is_listed = 1
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+GROUP BY
+    MONTH(listing_date)
+ORDER BY
+    MONTH(listing_date) ASC;
+*********************************
+问题序号：35
+用户问题：(suburb_name=Glenfield)房产类型为“排房”的成交量占总成交量的百分比是多少？
+问题相关的表：['property_transaction', 'property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN p.property_type = '排房' THEN 1 END) / COUNT(*)) * 100 AS percentage_townhouses
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Glenfield';
+*********************************
+问题序号：36
+用户问题：(suburb_name=New Lynn)在过去一年中，挂牌时间超过120天的房产成交价中位数是多少？
+问题相关的表：['property_transaction', 'property']
+生成的SQL：
+SELECT
+    AVG(transaction_price) AS median_transaction_price
+FROM (
+    SELECT
+        transaction_price
+    FROM
+        property_transaction
+    WHERE
+        suburb_name = 'New Lynn'
+        AND days_on_market > 120
+        AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+    ORDER BY
+        transaction_price
+    LIMIT 2 - (SELECT COUNT(*) FROM property_transaction WHERE suburb_name = 'New Lynn' AND days_on_market > 120 AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)) % 2    -- Adjust for even count of prices
+    OFFSET (SELECT (COUNT(*) - 1) / 2 FROM property_transaction WHERE suburb_name = 'New Lynn' AND days_on_market > 120 AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR))
+) AS median_subquery;
+*********************************
+问题序号：37
+用户问题：(suburb_name=Mangere)Deciles评分为8分以上的学校附近房产均价比区域平均值高多少？
+问题相关的表：['property', 'school', 'suburb_property_statistics']
+生成的SQL：
+SELECT
+    AVG(p.price) - sps.avm_mean AS price_difference
+FROM
+    property p
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+JOIN
+    suburb_property_statistics sps ON p.suburb_name = sps.suburb_name
+WHERE
+    s.suburb_name = 'Mangere'
+    AND s.decile > 8;
+*********************************
+问题序号：38
+用户问题：(suburb_name=Ponsonby)过去五年内，每年房产平均成交价格的涨幅是多少？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    YEAR(transaction_date) AS year,
+    AVG(transaction_price) AS average_transaction_price,
+    AVG(transaction_price) - LAG(AVG(transaction_price), 1) OVER (ORDER BY YEAR(transaction_date)) AS price_increase
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Ponsonby'
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR)
+GROUP BY
+    YEAR(transaction_date)
+ORDER BY
+    YEAR(transaction_date);
+*********************************
+问题序号：39
+用户问题：(suburb_name=Rosedale)过去一个季度内，挂牌价格最低的房产是哪个？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    property_id, suburb_name, price, listing_date
+FROM
+    property
+WHERE
+    suburb_name = 'Rosedale'
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+ORDER BY
+    price ASC
+LIMIT 1;
+*********************************
+问题序号：40
+用户问题：(suburb_name=Saint Heliers)过去一年里，该社区中位房价与周边区域的差异是多少？
+问题相关的表：['suburb_property_statistics', 'suburb_neighbors']
+生成的SQL：
+WITH saint_heliers_median AS (
+    SELECT
+        avm_median
+    FROM
+        suburb_property_statistics
+    WHERE
+        suburb_name = 'Saint Heliers'
+        AND year = YEAR(CURDATE()) - 1
+    ORDER BY
+        season DESC
+    LIMIT 1
+),
+neighbor_medians AS (
+    SELECT
+        AVG(sps.avm_median) AS avg_neighbor_median
+    FROM
+        suburb_property_statistics sps
+    JOIN
+        suburb_neighbors sn ON sps.suburb_id = sn.neighbor_suburb_id
+    WHERE
+        sn.suburb_name = 'Saint Heliers'
+        AND sps.year = YEAR(CURDATE()) - 1
+    GROUP BY
+        sps.year
+    ORDER BY
+        sps.season DESC
+    LIMIT 1
+)
+SELECT
+    sh.avm_median - nm.avg_neighbor_median AS median_price_difference
+FROM
+    saint_heliers_median sh, neighbor_medians nm;
+*********************************
+问题序号：41
+用户问题：(suburb_name=Herne Bay)最近挂牌的房产中，产权类型为全幅地永久产权的占比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN ownership_type = '全幅地永久产权' THEN 1 END) / COUNT(*)) * 100 AS percentage_full_freehold
+FROM
+    property
+WHERE
+    suburb_name = 'Herne Bay'
+    AND is_listed = 1
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH);
+*********************************
+问题序号：42
+用户问题：(suburb_name=Papatoetoe)这里成交最快的房产类型是什么，平均挂牌时间为多久？
+问题相关的表：['property_transaction', 'property']
+生成的SQL：
+SELECT
+    p.property_type,
+    AVG(pt.days_on_market) AS average_days_on_market
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Papatoetoe'
+GROUP BY
+    p.property_type
+ORDER BY
+    average_days_on_market ASC
+LIMIT 1;
+*********************************
+问题序号：43
+用户问题：(suburb_name=Massey)最近一个季度，挂牌价格超过200万的房产成交率是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(pt.transaction_id) / COUNT(p.property_id)) * 100 AS transaction_rate
+FROM
+    property p
+LEFT JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+WHERE
+    p.suburb_name = 'Massey'
+    AND p.price > 2000000
+    AND p.listing_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH);
+*********************************
+问题序号：44
+用户问题：(suburb_name=New Lynn)土地面积大于500平方米的房产中位价比全市中位价高多少？
+问题相关的表：['property', 'suburb_property_statistics', 'region_property_statistics']
+生成的SQL：
+SELECT
+    new_lynn_median.avm_median - city_median.avm_median AS price_difference
+FROM
+    (SELECT
+        AVG(price) AS avm_median
+     FROM
+        property
+     WHERE
+        suburb_name = 'New Lynn'
+        AND land_area > 500) AS new_lynn_median,
+    (SELECT
+        AVG(avm_median) AS avm_median
+     FROM
+        region_property_statistics
+     WHERE
+        year = YEAR(CURDATE())
+     ORDER BY
+        season DESC
+     LIMIT 1) AS city_median;
+*********************************
+问题序号：45
+用户问题：(suburb_name=Glenfield)过去一年中，成交量排名前五的月份分别是什么？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    DATE_FORMAT(transaction_date, '%Y-%m') AS year_month,
+    COUNT(transaction_id) AS transaction_count
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Glenfield'
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY
+    DATE_FORMAT(transaction_date, '%Y-%m')
+ORDER BY
+    transaction_count DESC
+LIMIT 5;
+*********************************
+问题序号：46
+用户问题：(suburb_name=Mangere)挂牌价格低于政府估价的房产数量占总挂牌房产的百分比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN price < price_by_government_valuation THEN 1 END) / COUNT(*)) * 100 AS percentage_below_government_valuation
+FROM
+    property
+WHERE
+    suburb_name = 'Mangere'
+    AND is_listed = 1;
+*********************************
+问题序号：47
+用户问题：(suburb_name=Rosedale)过去半年中，房价涨幅最快的房产类型是什么？
+问题相关的表：['property_transaction', 'property']
+生成的SQL：
+SELECT
+    p.property_type,
+    (MAX(pt.transaction_price) - MIN(pt.transaction_price)) / MIN(pt.transaction_price) * 100 AS price_increase_percentage
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Rosedale'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY
+    p.property_type
+ORDER BY
+    price_increase_percentage DESC
+LIMIT 1;
+*********************************
+问题序号：48
+用户问题：(suburb_name=Ponsonby)在全市范围内，这个社区的房产成交速度排名是多少？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    ranking.rank
+FROM (
+    SELECT
+        suburb_name,
+        AVG(days_on_market) AS avg_days_on_market,
+        RANK() OVER (ORDER BY AVG(days_on_market) ASC) AS rank
+    FROM
+        property_transaction
+    GROUP BY
+        suburb_name
+) AS ranking
+WHERE
+    ranking.suburb_name = 'Ponsonby';
+*********************************
+问题序号：49
+用户问题：(suburb_name=Saint Heliers)土地面积和成交价格的相关系数是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    p.land_area,
+    pt.transaction_price
+FROM
+    property p
+JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+WHERE
+    p.suburb_name = 'Saint Heliers';
+*********************************
+问题序号：50
+用户问题：(suburb_name=Herne Bay)过去一年中，挂牌价格超过400万的房产成交率是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(pt.transaction_id) / COUNT(p.property_id)) * 100 AS transaction_rate_percentage
+FROM
+    property p
+LEFT JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+WHERE
+    p.suburb_name = 'Herne Bay'
+    AND p.price > 4000000
+    AND p.listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR);
+*********************************
+问题序号：51
+用户问题：(suburb_name=Papatoetoe)最近挂牌的房产中，Deciles评分较高学校附近的比例是多少？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN s.decile > 7 THEN 1 END) / COUNT(*)) * 100 AS percentage_high_decile_schools
+FROM
+    property p
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+WHERE
+    p.suburb_name = 'Papatoetoe'
+    AND p.listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+    AND p.is_listed = 1;
+*********************************
+问题序号：52
+用户问题：(suburb_name=Massey)建筑面积大于300平方米的房产成交量占总成交量的百分比是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN p.building_area > 300 THEN 1 END) / COUNT(*)) * 100 AS percentage_large_building_area
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Massey';
+*********************************
+问题序号：53
+用户问题：(suburb_name=New Lynn)过去6个月内，挂牌量环比增长的幅度是多少？
+问题相关的表：['property']
+生成的SQL：
+WITH monthly_listings AS (
+    SELECT
+        DATE_FORMAT(listing_date, '%Y-%m') AS month,
+        COUNT(property_id) AS listing_count
+    FROM
+        property
+    WHERE
+        suburb_name = 'New Lynn'
+        AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    GROUP BY
+        DATE_FORMAT(listing_date, '%Y-%m')
+    ORDER BY
+        month
+),
+monthly_growth AS (
+    SELECT
+        month,
+        listing_count,
+        LAG(listing_count) OVER (ORDER BY month) AS previous_month_count
+    FROM
+        monthly_listings
+)
+SELECT
+    month,
+    (listing_count - previous_month_count) / previous_month_count * 100 AS growth_rate_percentage
+FROM
+    monthly_growth
+WHERE
+    previous_month_count IS NOT NULL;
+*********************************
+问题序号：54
+用户问题：(suburb_name=Glenfield)过去一年中，成交价格最高的前五套房产分别是什么类型？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    p.property_type,
+    pt.transaction_price
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Glenfield'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+ORDER BY
+    pt.transaction_price DESC
+LIMIT 5;
+*********************************
+问题序号：55
+用户问题：(suburb_name=Mangere)挂牌时间少于30天的房产成交比例是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN pt.days_on_market < 30 THEN 1 END) / COUNT(*)) * 100 AS percentage_sold_within_30_days
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    p.suburb_name = 'Mangere';
+*********************************
+问题序号：56
+用户问题：(suburb_name=Rosedale)在该社区中，带泳池房产的平均挂牌价格是多少？
+问题相关的表：['无']
+生成的SQL：
+SELECT
+    AVG(price) AS average_price_with_pool
+FROM
+    property
+WHERE
+    suburb_name = 'Rosedale'
+    AND has_pool = 1;
+*********************************
+问题序号：57
+用户问题：(suburb_name=Ponsonby)过去三个月内，Deciles评分为10分学校附近的房产成交率是多少？
+问题相关的表：['property', 'school', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT pt.property_id) / COUNT(DISTINCT p.property_id)) * 100 AS transaction_rate
+FROM
+    property p
+JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+WHERE
+    s.decile = 10
+    AND p.suburb_name = 'Ponsonby'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+    AND p.is_listed = 1;
+*********************************
+问题序号：58
+用户问题：(suburb_name=Saint Heliers)土地面积超过700平方米的房产均价比区域中位价高多少？
+问题相关的表：['property', 'suburb_property_statistics']
+生成的SQL：
+SELECT
+    AVG(p.price) - s.avm_median AS price_difference
+FROM
+    property p
+JOIN
+    suburb_property_statistics s ON p.suburb_id = s.suburb_id
+WHERE
+    p.suburb_name = 'Saint Heliers'
+    AND p.land_area > 700
+    AND s.year = YEAR(CURDATE())
+    AND s.season = QUARTER(CURDATE());
+*********************************
+问题序号：59
+用户问题：(suburb_name=Herne Bay)挂牌价格低于200万的房产数量占比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN price < 2000000 THEN 1 END) / COUNT(*)) * 100 AS percentage_below_2m
+FROM
+    property
+WHERE
+    suburb_name = 'Herne Bay'
+    AND is_listed = 1;
+*********************************
+问题序号：60
+用户问题：(suburb_name=Papatoetoe)过去一年内，房产成交量最高的用途类型是什么？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    p.purpose_type,
+    COUNT(*) AS transaction_count
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    p.suburb_name = 'Papatoetoe'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY
+    p.purpose_type
+ORDER BY
+    transaction_count DESC
+LIMIT 1;
+*********************************
+问题序号：61
+用户问题：(suburb_name=Massey)Deciles评分较低的学校附近的房产成交价格比平均值低多少？
+问题相关的表：['property', 'school', 'property_transaction']
+生成的SQL：
+SELECT
+    AVG(pt.transaction_price) - (
+        SELECT AVG(pt2.transaction_price)
+        FROM property_transaction pt2
+        JOIN property p2 ON pt2.property_id = p2.property_id
+        WHERE p2.suburb_name = 'Massey'
+    ) AS price_difference
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+WHERE
+    s.decile < (SELECT AVG(decile) FROM school WHERE suburb_name = 'Massey')
+    AND p.suburb_name = 'Massey';
+*********************************
+问题序号：62
+用户问题：(suburb_name=New Lynn)过去6个月内，成交价低于挂牌价的房产比例是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN pt.transaction_price < p.price THEN 1 END) / COUNT(*)) * 100 AS percentage_below_listing
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'New Lynn'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
+*********************************
+问题序号：63
+用户问题：(suburb_name=Glenfield)这个社区土地面积和建筑面积比例最大的房产是什么类型？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    property_type
+FROM
+    property
+WHERE
+    suburb_name = 'Glenfield'
+    AND building_area > 0
+ORDER BY
+    (land_area / building_area) DESC
+LIMIT 1;
+*********************************
+问题序号：64
+用户问题：(suburb_name=Mangere)过去一年中，建筑面积超过300平方米的房产成交率是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT pt.property_id) / COUNT(DISTINCT p.property_id)) * 100 AS transaction_rate
+FROM
+    property p
+LEFT JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+WHERE
+    p.suburb_name = 'Mangere'
+    AND p.building_area > 300
+    AND p.is_listed = 1;
+*********************************
+问题序号：65
+用户问题：(suburb_name=Rosedale)挂牌价格高于300万的房产中，成交周期的中位数是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    AVG(days_on_market) AS median_days_on_market
+FROM (
+    SELECT
+        pt.days_on_market
+    FROM
+        property_transaction pt
+    JOIN
+        property p ON pt.property_id = p.property_id
+    WHERE
+        p.suburb_name = 'Rosedale'
+        AND p.price > 3000000
+    ORDER BY
+        pt.days_on_market
+    LIMIT 1 OFFSET (SELECT COUNT(*) FROM property_transaction pt2 JOIN property p2 ON pt2.property_id = p2.property_id WHERE p2.suburb_name = 'Rosedale' AND p2.price > 3000000) / 2
+) AS subquery;
+*********************************
+问题序号：66
+用户问题：(suburb_name=Ponsonby)Deciles评分高于9分学校附近的房产数量占比是多少？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT p.property_id) / total_properties.total_count) * 100 AS percentage_near_high_decile_schools
+FROM
+    property p
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+JOIN
+    (SELECT COUNT(*) AS total_count
+     FROM property
+     WHERE suburb_name = 'Ponsonby') AS total_properties
+WHERE
+    s.decile > 9
+    AND p.suburb_name = 'Ponsonby';
+*********************************
+问题序号：67
+用户问题：(suburb_name=Saint Heliers)过去两年中，季度成交量的增长趋势如何？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    YEAR(transaction_date) AS year,
+    QUARTER(transaction_date) AS quarter,
+    COUNT(*) AS transaction_count
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Saint Heliers'
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+GROUP BY
+    YEAR(transaction_date),
+    QUARTER(transaction_date)
+ORDER BY
+    year,
+    quarter;
+*********************************
+问题序号：68
+用户问题：(suburb_name=Herne Bay)最近挂牌的房产中，房龄超过50年的占比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN YEAR(CURDATE()) - building_year > 50 THEN 1 END) / COUNT(*)) * 100 AS percentage_over_50_years_old
+FROM
+    property
+WHERE
+    suburb_name = 'Herne Bay'
+    AND is_listed = 1
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH);
+*********************************
+问题序号：69
+用户问题：(suburb_name=Papatoetoe)成交量最高的房产类型在过去一年里的平均挂牌价格是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    AVG(p.price) AS average_listing_price
+FROM
+    property p
+JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+WHERE
+    p.suburb_name = 'Papatoetoe'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+    AND p.property_type = (
+        SELECT
+            p_inner.property_type
+        FROM
+            property_transaction pt_inner
+        JOIN
+            property p_inner ON pt_inner.property_id = p_inner.property_id
+        WHERE
+            p_inner.suburb_name = 'Papatoetoe'
+            AND pt_inner.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        GROUP BY
+            p_inner.property_type
+        ORDER BY
+            COUNT(pt_inner.transaction_id) DESC
+        LIMIT 1
+    );
+*********************************
+问题序号：70
+用户问题：(suburb_name=Massey)挂牌价格在80万到150万之间的房产数量占总挂牌量的百分比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN price BETWEEN 800000 AND 1500000 THEN 1 END) / COUNT(*)) * 100 AS percentage_in_range
+FROM
+    property
+WHERE
+    suburb_name = 'Massey'
+    AND is_listed = 1;
+*********************************
+问题序号：71
+用户问题：(suburb_name=New Lynn)Deciles评分最高的学校周边房产成交量占全社区成交量的比例是多少？
+问题相关的表：['property', 'school', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT pt.property_id) / total_transactions.total_count) * 100 AS percentage_near_highest_decile_school
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+JOIN
+    (SELECT COUNT(*) AS total_count
+     FROM property_transaction
+     WHERE suburb_name = 'New Lynn') AS total_transactions
+WHERE
+    s.decile = (SELECT MAX(decile) FROM school WHERE suburb_name = 'New Lynn')
+    AND pt.suburb_name = 'New Lynn';
+*********************************
+问题序号：72
+用户问题：(suburb_name=Glenfield)房产类型为“建地”的挂牌价格中位数是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    price AS median_price
+FROM
+    (SELECT
+        price
+     FROM
+        property
+     WHERE
+        suburb_name = 'Glenfield'
+        AND property_type = '建地'
+        AND is_listed = 1
+     ORDER BY
+        price) AS sorted_prices
+LIMIT
+    1 OFFSET (SELECT COUNT(*) FROM property WHERE suburb_name = 'Glenfield' AND property_type = '建地' AND is_listed = 1) / 2;
+*********************************
+问题序号：73
+用户问题：(suburb_name=Mangere)过去6个月中，挂牌价格和成交价格的差距趋势如何？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    YEAR(pt.transaction_date) AS year,
+    MONTH(pt.transaction_date) AS month,
+    AVG(p.price - pt.transaction_price) AS average_price_difference
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Mangere'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+GROUP BY
+    YEAR(pt.transaction_date),
+    MONTH(pt.transaction_date)
+ORDER BY
+    year,
+    month;
+*********************************
+问题序号：74
+用户问题：(suburb_name=Rosedale)挂牌价格最高的前五套房产的房龄分别是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (YEAR(CURDATE()) - building_year) AS property_age
+FROM
+    property
+WHERE
+    suburb_name = 'Rosedale'
+    AND is_listed = 1
+ORDER BY
+    price DESC
+LIMIT 5;
+*********************************
+问题序号：75
+用户问题：(suburb_name=Ponsonby)房产类型为“公寓”的成交速度与独立别墅相比如何？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    property_type,
+    AVG(pt.days_on_market) AS average_days_on_market
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Ponsonby'
+    AND p.property_type IN ('公寓', '独立屋')
+GROUP BY
+    p.property_type;
+*********************************
+问题序号：76
+用户问题：(suburb_name=Saint Heliers)过去一年中，挂牌价格低于中位价的房产成交比例是多少？
+问题相关的表：['property', 'property_transaction', 'suburb_property_statistics']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT pt.property_id) / total_properties.total_count) * 100 AS percentage_below_median_sold
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+JOIN
+    (SELECT
+        avm_median
+     FROM
+        suburb_property_statistics
+     WHERE
+        suburb_name = 'Saint Heliers'
+     ORDER BY
+        year DESC, season DESC
+     LIMIT 1) AS stats ON p.suburb_name = stats.suburb_name
+JOIN
+    (SELECT COUNT(*) AS total_count
+     FROM property_transaction
+     WHERE suburb_name = 'Saint Heliers'
+     AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)) AS total_properties
+WHERE
+    p.suburb_name = 'Saint Heliers'
+    AND p.price < stats.avm_median
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR);
+*********************************
+问题序号：77
+用户问题：(suburb_name=Herne Bay)挂牌价格高于区域中位价30%的房产成交率是多少？
+问题相关的表：['property', 'property_transaction', 'suburb_property_statistics']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT pt.property_id) / total_properties.total_count) * 100 AS transaction_rate
+FROM
+    property p
+LEFT JOIN
+    property_transaction pt ON p.property_id = pt.property_id AND pt.transaction_date IS NOT NULL
+JOIN
+    (SELECT avm_median * 1.3 AS threshold_price
+     FROM suburb_property_statistics
+     WHERE suburb_name = 'Herne Bay'
+     ORDER BY year DESC, season DESC
+     LIMIT 1) AS stats
+JOIN
+    (SELECT COUNT(*) AS total_count
+     FROM property
+     WHERE suburb_name = 'Herne Bay'
+     AND price > stats.threshold_price) AS total_properties
+WHERE
+    p.suburb_name = 'Herne Bay'
+    AND p.price > stats.threshold_price;
+*********************************
+问题序号：78
+用户问题：(suburb_name=Papatoetoe)过去一年内，该区域房产的租金回报率变化趋势如何？
+问题相关的表：['suburb_rental_statistics']
+生成的SQL：
+SELECT
+    CONCAT(year, ' Q', quarter) AS period,
+    rental_yield_percent
+FROM
+    suburb_rental_statistics
+WHERE
+    suburb_name = 'Papatoetoe'
+    AND (year > YEAR(CURDATE()) - 1 OR (year = YEAR(CURDATE()) - 1 AND quarter >= QUARTER(CURDATE())))
+ORDER BY
+    year,
+    quarter;
+*********************************
+问题序号：79
+用户问题：(suburb_name=Massey)最近一年内，每月新增挂牌房产数量的波动幅度是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    YEAR(listing_date) AS year,
+    MONTH(listing_date) AS month,
+    COUNT(*) AS new_listings
+FROM
+    property
+WHERE
+    suburb_name = 'Massey'
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+    AND is_listed = 1
+GROUP BY
+    YEAR(listing_date),
+    MONTH(listing_date)
+ORDER BY
+    year,
+    month;
+*********************************
+问题序号：80
+用户问题：(suburb_name=Saint Heliers)土地面积大于1000平方米且Deciles评分高于8的房产比例是多少？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT p.property_id) / total_properties.total_count) * 100 AS percentage_large_land_high_decile
+FROM
+    property p
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+JOIN
+    (SELECT COUNT(*) AS total_count
+     FROM property
+     WHERE suburb_name = 'Saint Heliers') AS total_properties
+WHERE
+    p.suburb_name = 'Saint Heliers'
+    AND p.land_area > 1000
+    AND s.decile > 8;
+*********************************
+问题序号：81
+用户问题：(suburb_name=Herne Bay)过去一年，挂牌价格在500万以上的房产成交占比是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT pt.property_id) / total_properties.total_count) * 100 AS transaction_rate
+FROM
+    property p
+LEFT JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+WHERE
+    p.suburb_name = 'Herne Bay'
+    AND p.price > 5000000
+JOIN
+    (SELECT COUNT(*) AS total_count
+     FROM property
+     WHERE suburb_name = 'Herne Bay'
+     AND price > 5000000) AS total_properties;
+*********************************
+问题序号：82
+用户问题：(suburb_name=Papatoetoe)最近一个季度内，成交量最高的月份是哪一个？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    MONTH(transaction_date) AS month,
+    COUNT(*) AS transaction_count
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'Papatoetoe'
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+GROUP BY
+    MONTH(transaction_date)
+ORDER BY
+    transaction_count DESC
+LIMIT 1;
+*********************************
+问题序号：83
+用户问题：(suburb_name=Glenfield)房龄低于10年的房产平均挂牌时间是多少天？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    AVG(pt.days_on_market) AS average_days_on_market
+FROM
+    property p
+JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+WHERE
+    p.suburb_name = 'Glenfield'
+    AND (YEAR(CURDATE()) - p.building_year) < 10;
+*********************************
+问题序号：84
+用户问题：(suburb_name=New Lynn)Deciles评分为10分学校附近的土地面积中位数是多少？
+问题相关的表：['property', 'school']
+生成的SQL：
+SELECT
+    MEDIAN(p.land_area) AS median_land_area
+FROM
+    property p
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+WHERE
+    p.suburb_name = 'New Lynn'
+    AND s.decile = 10;
+*********************************
+问题序号：85
+用户问题：(suburb_name=Mangere)过去一年挂牌房产的建筑风格中，最受欢迎的类型是什么？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    building_style,
+    COUNT(*) AS style_count
+FROM
+    property
+WHERE
+    suburb_name = 'Mangere'
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY
+    building_style
+ORDER BY
+    style_count DESC
+LIMIT 1;
+*********************************
+问题序号：86
+用户问题：(suburb_name=Ponsonby)过去五年中，每年土地面积中位数变化趋势如何？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    YEAR(listing_date) AS year,
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY land_area) AS median_land_area
+FROM
+    property
+WHERE
+    suburb_name = 'Ponsonby'
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 5 YEAR)
+GROUP BY
+    YEAR(listing_date)
+ORDER BY
+    year;
+*********************************
+问题序号：87
+用户问题：(suburb_name=Rosedale)挂牌价格高于政府估价的房产数量占总挂牌量的百分比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN price > price_by_government_valuation THEN 1 END) / COUNT(*)) * 100 AS percentage_above_government_valuation
+FROM
+    property
+WHERE
+    suburb_name = 'Rosedale'
+    AND is_listed = 1;
+*********************************
+问题序号：88
+用户问题：(suburb_name=Saint Heliers)挂牌价格和房产成交周期的关系如何？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    p.price AS listing_price,
+    t.days_on_market
+FROM
+    property p
+JOIN
+    property_transaction t ON p.property_id = t.property_id
+WHERE
+    p.suburb_name = 'Saint Heliers';
+*********************************
+问题序号：89
+用户问题：(suburb_name=Herne Bay)过去一年，成交量最高的房产用途是什么？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    p.purpose_type,
+    COUNT(*) AS transaction_count
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Herne Bay'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY
+    p.purpose_type
+ORDER BY
+    transaction_count DESC
+LIMIT 1;
+*********************************
+问题序号：90
+用户问题：(suburb_name=Papatoetoe)最近挂牌的公寓中，Deciles评分高于8分学校附近的比例是多少？
+问题相关的表：['property', 'school']
+生成的SQL：
+WITH recent_apartments AS (
+    SELECT
+        property_id
+    FROM
+        property
+    WHERE
+        suburb_name = 'Papatoetoe'
+        AND property_type = '公寓'
+        AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+)
+
+SELECT
+    (COUNT(DISTINCT ra.property_id) / COUNT(DISTINCT p.property_id)) * 100 AS percentage_near_high_decile_schools
+FROM
+    recent_apartments ra
+JOIN
+    property p ON ra.property_id = p.property_id
+JOIN
+    school s ON p.suburb_name = s.suburb_name
+WHERE
+    s.decile > 8;
+*********************************
+问题序号：91
+用户问题：(suburb_name=Massey)过去6个月，成交房产的土地面积平均值是多少平方米？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    AVG(p.land_area) AS average_land_area
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Massey'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
+*********************************
+问题序号：92
+用户问题：(suburb_name=New Lynn)成交价格低于挂牌价格10%以上的房产数量占比是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN pt.transaction_price < p.price * 0.9 THEN 1 END) / COUNT(*)) * 100 AS percentage_below_90_percent
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'New Lynn';
+*********************************
+问题序号：93
+用户问题：(suburb_name=Glenfield)挂牌时间超过120天的房产中，成交价和挂牌价的差距平均是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    AVG(p.price - pt.transaction_price) AS average_price_difference
+FROM
+    property_transaction pt
+JOIN
+    property p ON pt.property_id = p.property_id
+WHERE
+    pt.suburb_name = 'Glenfield'
+    AND pt.days_on_market > 120;
+*********************************
+问题序号：94
+用户问题：(suburb_name=Mangere)过去一年，成交量和挂牌价格的相关性如何？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    p.property_id,
+    p.price AS listing_price,
+    COUNT(pt.transaction_id) AS transaction_count
+FROM
+    property p
+JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+WHERE
+    pt.suburb_name = 'Mangere'
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+GROUP BY
+    p.property_id
+ORDER BY
+    p.property_id;
+*********************************
+问题序号：95
+用户问题：(suburb_name=Rosedale)最近挂牌的房产中，建筑面积超过300平方米的占比是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    (COUNT(CASE WHEN building_area > 300 THEN 1 END) / COUNT(*)) * 100 AS percentage_over_300sqm
+FROM
+    property
+WHERE
+    suburb_name = 'Rosedale'
+    AND is_listed = 1
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR);
+*********************************
+问题序号：96
+用户问题：(suburb_name=Ponsonby)房产类型为“城市屋”的平均挂牌价格是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    AVG(price) AS average_listing_price
+FROM
+    property
+WHERE
+    suburb_name = 'Ponsonby'
+    AND property_type = '城市屋';
+*********************************
+问题序号：97
+用户问题：(suburb_name=Saint Heliers)过去三个月内挂牌量与成交量的比值是多少？
+问题相关的表：['property', 'property_transaction']
+生成的SQL：
+SELECT
+    (COUNT(DISTINCT p.property_id) / COUNT(DISTINCT pt.property_id)) AS listing_to_transaction_ratio
+FROM
+    property p
+LEFT JOIN
+    property_transaction pt ON p.property_id = pt.property_id
+    AND pt.transaction_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+WHERE
+    p.suburb_name = 'Saint Heliers'
+    AND p.listing_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+    AND p.is_listed = 1;
+*********************************
+问题序号：98
+用户问题：(suburb_name=Herne Bay)过去两年中，每季度挂牌量的变化幅度是多少？
+问题相关的表：['property']
+生成的SQL：
+SELECT
+    YEAR(listing_date) AS year,
+    QUARTER(listing_date) AS quarter,
+    COUNT(*) AS listing_count
+FROM
+    property
+WHERE
+    suburb_name = 'Herne Bay'
+    AND listing_date >= DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+GROUP BY
+    YEAR(listing_date),
+    QUARTER(listing_date)
+ORDER BY
+    year, quarter;
+*********************************
+问题序号：99
+用户问题：(suburb_name=Papatoetoe)挂牌价格低于全市均价的房产比例是多少？
+问题相关的表：['property', 'suburb_property_statistics']
+生成的SQL：
+WITH city_avg_price AS (
+    SELECT
+        AVG(avm_mean) AS city_mean_price
+    FROM
+        suburb_property_statistics
+)
+
+SELECT
+    (COUNT(CASE WHEN p.price < cap.city_mean_price THEN 1 END) / COUNT(*)) * 100 AS percentage_below_city_average
+FROM
+    property p
+JOIN
+    city_avg_price cap
+WHERE
+    p.suburb_name = 'Papatoetoe';
+*********************************
+问题序号：100
+用户问题：(suburb_name=Massey)成交价格在区域中位价以下的房产占总成交量的百分比是多少？
+问题相关的表：['property_transaction', 'suburb_property_statistics']
+生成的SQL：
+WITH latest_statistics AS (
+    SELECT
+        avm_median
+    FROM
+        suburb_property_statistics
+    WHERE
+        suburb_name = 'Massey'
+    ORDER BY
+        year DESC, season DESC
+    LIMIT 1
+)
+
+SELECT
+    (COUNT(CASE WHEN pt.transaction_price < ls.avm_median THEN 1 END) / COUNT(*)) * 100 AS percentage_below_median
+FROM
+    property_transaction pt
+JOIN
+    latest_statistics ls
+ON
+    pt.suburb_name = 'Massey';
+*********************************
+问题序号：101
+用户问题：(suburb_name=New Lynn)过去半年中，成交时间少于30天的房产数量是多少？
+问题相关的表：['property_transaction']
+生成的SQL：
+SELECT
+    COUNT(*) AS count_properties_under_30_days
+FROM
+    property_transaction
+WHERE
+    suburb_name = 'New Lynn'
+    AND transaction_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    AND days_on_market < 30;

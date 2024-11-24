@@ -4,9 +4,10 @@ from handlers.query_handler import handle_query
 
 
 # 文件名
-file_name = "test/questions_2类_subset.txt"
+# file_name = "test/questions_2类_subset.txt"
 # file_name = "test/questions_3类_预处理.txt"
 # file_name = "test/第4类问题_questions_中文.txt"
+file_name = "test/questions_all(234sam+23llm)_for_ui.txt"
 
 # 打开文件并逐行读取
 with open(file_name, "r", encoding="utf-8") as file:

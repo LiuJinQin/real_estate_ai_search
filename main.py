@@ -1,8 +1,6 @@
 from handlers.query_handler import handle_query
 from config.config import Config
 
-from handlers.query_handler import handle_query
-
 def main():
 
     """
@@ -16,15 +14,15 @@ def main():
 
     """
     # 文件名
-    # file_name = "test/questions.txt"
-    # file_name = "test/questions_2类.txt"
-    file_name = "test/questions_2类_subset.txt"
-    # file_name = "test/questions_3类.txt"
-    file_name = "test/questions_3类_预处理.txt"
+    # file_name = "test/questions_for_test_adjust_the_order.txt"
+    # file_name = "test/questions_2类_by_sam.txt"
+    file_name = "test/questions_2类_by_sam_subset.txt"
+    # file_name = "test/questions_3类_by_sam.txt"
+    file_name = "test/questions_3类_by_sam_预处理.txt"
     # file_name = "test/第4类问题_questions_中文.txt"
     file_name = "test/questions_2类+3类_by_sam.txt"
     file_name = "test/questions_2类_by_llm.txt"
-    file_name = "test/questions_4类.txt"
+    file_name = "test/questions_4类_by_sam.txt"
     file_name = "test/questions_3类_by_llm.txt"
 
     # 打开文件并逐行读取
@@ -33,7 +31,7 @@ def main():
 
     # 去掉每行的换行符并打印
     queries = [query.strip() for query in queries if query.strip() and "#" not in query]
-    for i, query in enumerate(queries[:30], start=1):
+    for i, query in enumerate(queries[83:101], start=84):
         # print(f"# Q{i} - {query}")
         print(f"*********************************")
         print(f"问题序号：{i}")

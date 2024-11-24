@@ -2,7 +2,7 @@ import sqlite3
 
 # 假设数据库文件已存在
 DATABASE_FILE = 'real_estate_demo.db'
-QUESTIONS_FILE = 'questions.txt'
+QUESTIONS_FILE = 'questions_for_test_adjust_the_order.txt'
 
 # 读取问题文件，执行测试
 def run_tests():

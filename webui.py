@@ -7,14 +7,19 @@ from handlers.query_handler import handle_query
 # file_name = "test/questions_2类_subset.txt"
 # file_name = "test/questions_3类_预处理.txt"
 # file_name = "test/第4类问题_questions_中文.txt"
-file_name = "test/questions_all(234sam+23llm)_for_ui.txt"
+file_name_by_sam = "test/questions_for_webui_2类+3类+4类_by_sam.txt"
+file_name_by_llm = "test/questions_for_webui_2类+3类_by_llm.txt"
 
 # 打开文件并逐行读取
-with open(file_name, "r", encoding="utf-8") as file:
-    queries = file.readlines()
+with open(file_name_by_sam, "r", encoding="utf-8") as file:
+    queries_by_sam = file.readlines()
+
+with open(file_name_by_llm, "r", encoding="utf-8") as file:
+    queries_by_llm = file.readlines()
 
 # 去掉每行的换行符并打印
-queries = [query.strip() for query in queries if query.strip() and "#" not in query]
+queries_by_sam = [query.strip() for query in queries_by_sam if query.strip() and "#" not in query]
+queries_by_llm = [query.strip() for query in queries_by_llm if query.strip() and "#" not in query]
 
 def text_to_sql(user_input, chat_history):
 
@@ -62,7 +67,7 @@ with gr.Blocks() as demo:
             user_input = gr.Textbox(
                 label="User Question",
                 placeholder="请输入您的问题",
-                value=queries[0]
+                value=queries_by_sam[0]
             )
             user_input.submit(
                 fn=text_to_sql_good_display_sql_code,
@@ -77,6 +82,8 @@ with gr.Blocks() as demo:
             )
             clear_btn = gr.ClearButton([user_input, chatbot])
         with gr.Column(scale=2):
-            with gr.Tab("示例用户问题"):
-                example_user_inputs = gr.JSON(queries)
+            with gr.Tab("SAM提供的问题测试"):
+                example_user_inputs = gr.JSON(queries_by_sam)
+            with gr.Tab("批量生成的问题测试"):
+                example_user_inputs = gr.JSON(queries_by_llm)
 demo.launch(debug=True)

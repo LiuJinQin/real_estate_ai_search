@@ -40,7 +40,7 @@
 
    ```bash
    cd ..
-   python ui.py
+   python webui.py
    ```
 
    这将启动前端界面，你可以在浏览器中访问该界面进行操作。
